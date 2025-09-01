@@ -1,10 +1,7 @@
 import Link from 'next/link';
-import {
-  Eye,
-  PlusCircle,
-  BarChart3,
-} from 'lucide-react';
+import { Eye, PlusCircle, BarChart3, Trash2 } from 'lucide-react';
 import { getFormsByUser } from '@/lib/db';
+import { deleteFormAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -27,10 +24,22 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default async function DashboardPage() {
-  const forms = await getFormsByUser('user1'); // Mock user
+  const forms = await getFormsByUser("user1"); // Mock user
 
   return (
     <div className="space-y-8">
@@ -51,7 +60,9 @@ export default async function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>Your Forms</CardTitle>
-          <CardDescription>A list of all the forms you have created.</CardDescription>
+          <CardDescription>
+            A list of all the forms you have created.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {forms.length > 0 ? (
@@ -69,37 +80,81 @@ export default async function DashboardPage() {
                   <TableRow key={form.id}>
                     <TableCell className="font-medium">{form.title}</TableCell>
                     <TableCell className="text-center">
-                       <Badge variant="secondary">{form.submissionCount}</Badge>
+                      <Badge variant="secondary">{form.submissionCount}</Badge>
                     </TableCell>
-                    <TableCell>{new Date(form.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(form.createdAt).toLocaleDateString()}
+                    </TableCell>
                     <TableCell className="text-right">
                       <TooltipProvider>
-                      <div className="flex justify-end gap-2">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" asChild>
-                               <Link href={`/form/${form.id}`} target="_blank">
-                                <Eye className="h-4 w-4" />
-                               </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>View Live Form</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                             <Button variant="ghost" size="icon" asChild>
+                        <div className="flex justify-end gap-2">
+                          {/* View Live Form */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" asChild>
+                                <Link href={`/form/${form.id}`} target="_blank">
+                                  <Eye className="h-4 w-4" />
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View Live Form</p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          {/* View Submissions */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" asChild>
                                 <Link href={`/dashboard/forms/${form.id}/submissions`}>
                                   <BarChart3 className="h-4 w-4" />
                                 </Link>
-                             </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>View Submissions</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View Submissions</p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          {/* Delete Form with Confirmation */}
+                          <AlertDialog>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" size="icon">
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Delete Form</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Form?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete <b>{form.title}</b> and all its submissions.
+                                  This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <form
+                                  action={async () => {
+                                    "use server";
+                                    await deleteFormAction(form.id);
+                                  }}
+                                >
+                                  <AlertDialogAction type="submit" className="bg-red-600 hover:bg-red-700">
+                                    Delete
+                                  </AlertDialogAction>
+                                </form>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </TooltipProvider>
                     </TableCell>
                   </TableRow>

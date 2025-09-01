@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { generateFormSchemaFromPrompt } from '@/ai/flows/generate-form-schema-from-prompt';
 import { addForm, addSubmission } from '@/lib/db';
 import { FormSchema } from './types';
+import { deleteFormById } from "@/lib/db";
 
 export async function generateFormAction(
   prevState: { error?: string; schema?: FormSchema },
@@ -55,4 +56,13 @@ export async function saveSubmissionAction(formId: string, data: Record<string, 
 
     revalidatePath(`/form/${formId}`);
     redirect(`/form/${formId}/success`);
+}
+export async function deleteFormAction(formId: string) {
+  try {
+    await deleteFormById(formId);
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message };
+  }
 }

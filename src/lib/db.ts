@@ -61,29 +61,53 @@ export async function getSubmissionsForForm(formId: string): Promise<Submission[
     const submissionsArray = await submissionsCursor.toArray();
     return submissionsArray.map(sub => fromMongo(sub) as Submission);
 }
-
 export async function addSubmission(formId: string, data: Record<string, any>): Promise<Submission> {
-    const { submissionsCollection, formsCollection } = await getCollections();
-    
-    if (!ObjectId.isValid(formId)) {
-        throw new Error('Invalid Form ID');
+  const { submissionsCollection, formsCollection } = await getCollections();
+
+  if (!ObjectId.isValid(formId)) {
+    throw new Error("Invalid Form ID");
+  }
+
+  const form = await formsCollection.findOne({ _id: new ObjectId(formId) });
+  if (!form) throw new Error("Form not found");
+
+  // 🔹 Sanitize data: ensure file fields are just Cloudinary URLs
+  const sanitizedData: Record<string, any> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value instanceof File) {
+      throw new Error(`File object detected for field "${key}". Upload should return a Cloudinary URL.`);
     }
+    sanitizedData[key] = value;
+  }
 
-    const form = await formsCollection.findOne({ _id: new ObjectId(formId) });
-    if (!form) throw new Error('Form not found');
+  const newSubmission: Omit<Submission, "id"> = {
+    formId,
+    data: sanitizedData,
+    createdAt: new Date(),
+  };
 
-    const newSubmission: Omit<Submission, 'id'> = {
-        formId,
-        data,
-        createdAt: new Date(),
-    };
+  const result = await submissionsCollection.insertOne(newSubmission as WithId<Submission>);
 
-    const result = await submissionsCollection.insertOne(newSubmission as WithId<Submission>);
+  await formsCollection.updateOne(
+    { _id: new ObjectId(formId) },
+    { $inc: { submissionCount: 1 } }
+  );
 
-    await formsCollection.updateOne(
-        { _id: new ObjectId(formId) },
-        { $inc: { submissionCount: 1 } }
-    );
-  
-    return { ...newSubmission, id: result.insertedId.toHexString() };
+  return { ...newSubmission, id: result.insertedId.toHexString() };
+}
+
+export async function deleteFormById(formId: string): Promise<boolean> {
+  const { formsCollection, submissionsCollection } = await getCollections();
+
+  if (!ObjectId.isValid(formId)) {
+    return false;
+  }
+
+  // Delete form
+  await formsCollection.deleteOne({ _id: new ObjectId(formId) });
+
+  // Delete all submissions for that form
+  await submissionsCollection.deleteMany({ formId });
+
+  return true;
 }
