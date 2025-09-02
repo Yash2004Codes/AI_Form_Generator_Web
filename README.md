@@ -51,12 +51,10 @@ cd ai-form-generator (after cloning )
 
 3️⃣ Configure Environment Variables:
 Create a .env.local file in project root directory and copy and fill these info
-# MongoDB
+
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/formdb
 MONGODB_DB=formdb
-# Gemini API
 GEMINI_API_KEY=your_gemini_api_key
-# Cloudinary
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
@@ -105,8 +103,8 @@ For demo login use =>
 ![Form Preview](screenshots/preview.png)
 
 ## 📝 Submit Form  
-![Submit Form](screenshots/submittedform.png)  
-![Success Page](screenshots/succees.png)
+![Submit Form](screenshots/submitedform.png)  
+![Success Page](screenshots/success.png)
 
 ## 📂 Display Collected Data  
 ![Collected Data](screenshots/collectedData.png)
@@ -115,17 +113,18 @@ For demo login use =>
 ![Delete Form](screenshots/delete.png)
 
 ## 📱 App Version: Completely Mobile Responsive  
-![Mobile Version](screenshots/mobile.png)
+![Mobile Version](screenshots/mobile.jpg)
 
 
 
 
 
-👨‍💻 Developer Info
+
+#👨‍💻 Developer Info
 
 Name: Yash Lalit Sharma
 
-💼 LinkedIn: linkedin.com/in/yash-lalit-sharma
+💼 LinkedIn: https://www.linkedin.com/in/yash-lalit-sharma/
 
 💻 GitHub: github.com/Yash2004Codes
 
