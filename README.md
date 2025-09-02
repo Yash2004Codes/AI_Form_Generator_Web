@@ -81,6 +81,8 @@ Complex prompt might not generate the the expected forms.Simple prompts with cle
 
 🎯 Working Demo
 
+Live Link :-https://formyfyai.netlify.app/
+
 🔗 Web Version: 
 
 # 📸 Screenshots
