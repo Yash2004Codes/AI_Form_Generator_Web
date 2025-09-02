@@ -85,30 +85,37 @@ Complex prompt might not generate the the expected forms.Simple prompts with cle
 
 🔗 Web Version: 
 
-📸 Screenshots 
+# 📸 Screenshots
 
-🏠 Home Page
- screenshots/HomePage.png
-🔐 User Authentication
-  screenshots/Authenticate.png
-  For demo login use => email : yashjiakola@gmail.com ,password :12345678
-  You can create your own real  account and login as well !
-📊 User Dashboard
- screenshots/overview.png
-✍️ Form Creation 
- screenshots/prompt.png
-  screenshots/preview.png
-📝 Submit Form
- screenshots/submittedform.png
- screenshots/succees.png
+## 🏠 Home Page  
+![Home Page](screenshots/HomePage.png)
 
-📂 Display Collected Data
- screenshots/collectedData.png
-❌ Delete Form
- screenshots/delete.png
+## 🔐 User Authentication  
+![User Authentication](screenshots/Authenticate.png)  
+For demo login use =>  
+**Email:** yashjiakola@gmail.com  
+**Password:** 12345678  
+(You can create your own real account and login as well!)
 
-📱 App Version: Completely Mobile responsive
-screenshots/mobile.png
+## 📊 User Dashboard  
+![User Dashboard](screenshots/overview.png)
+
+## ✍️ Form Creation  
+![Form Creation](screenshots/prompt.png)  
+![Form Preview](screenshots/preview.png)
+
+## 📝 Submit Form  
+![Submit Form](screenshots/submittedform.png)  
+![Success Page](screenshots/succees.png)
+
+## 📂 Display Collected Data  
+![Collected Data](screenshots/collectedData.png)
+
+## ❌ Delete Form  
+![Delete Form](screenshots/delete.png)
+
+## 📱 App Version: Completely Mobile Responsive  
+![Mobile Version](screenshots/mobile.png)
 
 
 
