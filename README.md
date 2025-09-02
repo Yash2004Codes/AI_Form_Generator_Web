@@ -120,9 +120,7 @@ For demo login use =>
 
 
 
-
-
-#👨‍💻 Developer Info
+## 👨‍💻 Developer Info
 
 Name: Yash Lalit Sharma
 
