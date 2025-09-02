@@ -19,18 +19,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-type FormRendererProps = {
-  schema: FormSchema;
-  onSubmit: (data: Record<string, any>) => void;
-  isSubmitting?: boolean;
-};
-
-// 🔹 Build Zod schema from field definitions
+// 🔹 Build Zod schema dynamically
 const buildZodSchema = (fields: FormFieldDefinition[]) => {
-  const zodSchema: Record<string, z.ZodType<any, any>> = {};
+  const zodSchema: Record<string, z.ZodTypeAny> = {};
 
   fields.forEach((field) => {
-    let fieldSchema: z.ZodType<any, any>;
+    let fieldSchema: z.ZodTypeAny;
 
     switch (field.type) {
       case "text":
@@ -39,7 +33,7 @@ const buildZodSchema = (fields: FormFieldDefinition[]) => {
         fieldSchema = z.string();
         break;
       case "email":
-        fieldSchema = z.string().email();
+        fieldSchema = z.string().email("Invalid email address");
         break;
       case "number":
         fieldSchema = z.coerce.number();
@@ -55,8 +49,8 @@ const buildZodSchema = (fields: FormFieldDefinition[]) => {
         fieldSchema = z.boolean().default(false);
         break;
       case "file":
-        // store as a Cloudinary URL string
-        fieldSchema = z.string().url("Invalid file URL");
+        // ✅ Expect a URL string, not File
+        fieldSchema = z.string().url("File upload failed. Please try again.");
         break;
       default:
         fieldSchema = z.any();
@@ -79,15 +73,20 @@ const buildZodSchema = (fields: FormFieldDefinition[]) => {
   return z.object(zodSchema);
 };
 
+type FormRendererProps = {
+  schema: FormSchema;
+  onSubmit: (data: Record<string, any>) => void;
+  isSubmitting?: boolean;
+};
+
 export default function FormRenderer({ schema, onSubmit, isSubmitting = false }: FormRendererProps) {
   const zodSchema = buildZodSchema(schema.fields);
   const form = useForm<z.infer<typeof zodSchema>>({
     resolver: zodResolver(zodSchema),
   });
 
-  // 🔹 Render individual fields
   const renderField = (fieldDefinition: FormFieldDefinition, formField: any) => {
-    const { type, name, label, placeholder, options } = fieldDefinition;
+    const { type, label, placeholder, options, name } = fieldDefinition;
 
     switch (type) {
       case "text":
@@ -151,7 +150,10 @@ export default function FormRenderer({ schema, onSubmit, isSubmitting = false }:
               <FormControl>
                 <Button
                   variant={"outline"}
-                  className={cn("w-full pl-3 text-left font-normal", !formField.value && "text-muted-foreground")}
+                  className={cn(
+                    "w-full pl-3 text-left font-normal",
+                    !formField.value && "text-muted-foreground"
+                  )}
                 >
                   {formField.value ? format(formField.value, "PPP") : <span>{placeholder || "Pick a date"}</span>}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -182,16 +184,22 @@ export default function FormRenderer({ schema, onSubmit, isSubmitting = false }:
                 });
 
                 const data = await res.json();
+                console.log("Uploaded file URL:", data.url);
 
-                // Save Cloudinary URL into form state
+                // ✅ Replace File object with Cloudinary URL in state
                 formField.onChange(data.url);
               }}
             />
+            {formField.value && (
+              <a href={formField.value} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                Uploaded File
+              </a>
+            )}
           </div>
         );
 
       default:
-        return <Input type="text" {...formField} />;
+        return <Input type="text" placeholder={placeholder} {...formField} />;
     }
   };
 
